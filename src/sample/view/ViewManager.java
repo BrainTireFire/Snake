@@ -10,8 +10,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import sample.model.SnakeButton;
-import sample.model.SnakeGameScene;
-import sample.model.SnakeSubScene;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,9 +24,6 @@ public class ViewManager {
 
     private final static int menuButtonStartLocationX = 200;
     private final static int menuButtonStartLocationY = 100;
-
-    private SnakeGameScene gameSubScene;
-
     List<SnakeButton> menuButtons;
 
     public ViewManager(){
@@ -42,13 +37,6 @@ public class ViewManager {
         createLogo();
 
     }
-/*
-    private void createSubScenes(){
-        gameSubScene = new SnakeGameScene();
-        mainPane.getChildren().add(gameSubScene);
-    }
-
- */
 
     public Stage getMainStage() {
         return mainStage;

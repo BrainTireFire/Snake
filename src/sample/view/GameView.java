@@ -16,6 +16,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
@@ -51,6 +52,7 @@ public class GameView {
     private int foodLocationY;
     private boolean gameOver;
     private int currentDirection;
+    private int score = 0;
 
     public static class Point{
         int x;
@@ -137,9 +139,16 @@ public class GameView {
     }
 
     private void runGame(GraphicsContext graphicsContext){
+        if (gameOver){
+            graphicsContext.setFill(Color.RED);
+            graphicsContext.setFont(new Font("Serif", 70));
+            graphicsContext.fillText("You are dead", widthGameScene/5.5, heightGameScene/2);
+            return;
+        }
         drawBackground(graphicsContext);
         drawFood(graphicsContext);
         drawSnake(graphicsContext);
+        drawSnakeScore();
 
         for (int i = snakeBody.size() - 1;i>= 1;i--){
             snakeBody.get(i).x = snakeBody.get(i-1).x;
@@ -147,6 +156,8 @@ public class GameView {
         }
 
         moveSnake();
+        gameOver();
+        eatSnakeFood();
     }
 
     private void generateFood(){
@@ -165,6 +176,27 @@ public class GameView {
         }
     }
 
+    private void eatSnakeFood(){
+        if (snakehead.getX() == foodLocationX && snakehead.getY() == foodLocationY){
+            snakeBody.add(new Point(-1,-1));
+            generateFood();
+            score ++;
+        }
+    }
+
+    private void drawBackground(GraphicsContext graphicsContext){
+        for (int i=0;i<rows;i++){
+            for (int j=0;j<colums;j++){
+                if((i+j)%2==0){
+                    graphicsContext.setFill(Color.web("E0FFFF"));
+                }else {
+                    graphicsContext.setFill(Color.web("AFEEEE"));
+                }
+                graphicsContext.fillRect(i*backgroundSquareSize, j* backgroundSquareSize, backgroundSquareSize, backgroundSquareSize);
+            }
+        }
+    }
+
     private void drawFood(GraphicsContext graphicsContext){
         graphicsContext.drawImage(foodImage, foodLocationX * backgroundSquareSize, foodLocationY * backgroundSquareSize, backgroundSquareSize, backgroundSquareSize);
     }
@@ -178,6 +210,12 @@ public class GameView {
             graphicsContext.fillRoundRect(snakeBody.get(i).getX()*backgroundSquareSize, snakeBody.get(i).getY()*backgroundSquareSize,
                     backgroundSquareSize -1, backgroundSquareSize- 1, 20, 20 );
         }
+    }
+
+    private void drawSnakeScore(){
+        graphicsContext.setFill(Color.web("7B68EE"));
+        graphicsContext.setFont((new Font("Serif", 30)));
+        graphicsContext.fillText("Score: " + score, 10, 30);
     }
 
     private void moveSnake(){
@@ -213,16 +251,15 @@ public class GameView {
         snakehead.y++;
     }
 
-    private void drawBackground(GraphicsContext graphicsContext){
-        for (int i=0;i<rows;i++){
-            for (int j=0;j<colums;j++){
-                if((i+j)%2==0){
-                    Button button = new Button("test");
-                    graphicsContext.setFill(Color.web("E0FFFF"));
-                }else {
-                    graphicsContext.setFill(Color.web("AFEEEE"));
-                }
-                graphicsContext.fillRect(i*backgroundSquareSize, j* backgroundSquareSize, backgroundSquareSize, backgroundSquareSize);
+    public void gameOver(){
+        if (snakehead.x < 0 || snakehead.y < 0 || snakehead.x < 0 || snakehead.x * backgroundSquareSize >= widthGameScene || snakehead.y * backgroundSquareSize >= heightGameScene){
+            gameOver = true;
+        }
+
+        for (int i=1;i< snakeBody.size();i++){
+            if (snakehead.x == snakeBody.get(i).getX() && snakehead.y == snakeBody.get(i).getY()){
+                gameOver = true;
+                break;
             }
         }
     }
