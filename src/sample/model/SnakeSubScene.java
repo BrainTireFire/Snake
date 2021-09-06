@@ -13,6 +13,8 @@ public class SnakeSubScene extends SubScene {
 
     private final static String backgroundImage = "sample/model/resources/background.jpg";
 
+    private boolean subSceneIsHidden;
+
     public SnakeSubScene() {
         super(new AnchorPane(), 600, 600);
         prefWidth(600);
@@ -25,6 +27,8 @@ public class SnakeSubScene extends SubScene {
 
         root2.setBackground(new Background(image));
 
+        subSceneIsHidden = true;
+
         setLayoutX(1000);
         setLayoutY(180);
     }
@@ -34,9 +38,20 @@ public class SnakeSubScene extends SubScene {
         transition.setDuration(Duration.seconds(0.3));
         transition.setNode(this);
 
-        transition.setToX(-1000);
-        transition.setToY(-180);
+        if(subSceneIsHidden){
+            transition.setToX(-1000);
+            transition.setToY(-180);
+            subSceneIsHidden = false;
+        }else{
+            transition.setToX(0);
+            transition.setToY(0);
+            subSceneIsHidden = true;
+        }
 
         transition.play();
+    }
+
+    public AnchorPane getPane(){
+        return (AnchorPane) this.getRoot();
     }
 }

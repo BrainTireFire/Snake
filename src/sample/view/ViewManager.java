@@ -10,6 +10,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import sample.model.SnakeButton;
+import sample.model.SnakeSubScene;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +27,9 @@ public class ViewManager {
     private final static int menuButtonStartLocationY = 100;
     List<SnakeButton> menuButtons;
 
+    private SnakeSubScene optionsSubScene;
+    private SnakeSubScene scoreSubScene;
+
     public ViewManager(){
         menuButtons = new ArrayList<>();
         mainPane = new AnchorPane();
@@ -35,7 +39,6 @@ public class ViewManager {
         createButtons();
         createBackground();
         createLogo();
-
     }
 
     public Stage getMainStage() {
@@ -47,6 +50,20 @@ public class ViewManager {
         button.setLayoutY(menuButtonStartLocationY + menuButtons.size() * 100);
         menuButtons.add(button);
         mainPane.getChildren().add(button);
+    }
+
+    private void createScoreSubScene(){
+        scoreSubScene = new SnakeSubScene();
+        mainPane.getChildren().add(scoreSubScene);
+        scoreSubScene.moveSubScene();
+        scoreSubScene.getPane().getChildren().add(createBackButton(scoreSubScene));
+    }
+
+    private void createOptionSubScene(){
+        optionsSubScene = new SnakeSubScene();
+        mainPane.getChildren().add(optionsSubScene);
+        optionsSubScene.moveSubScene();
+        optionsSubScene.getPane().getChildren().add(createBackButton(optionsSubScene));
     }
 
     private void createButtons() {
@@ -70,15 +87,43 @@ public class ViewManager {
         });
     }
 
-
     private void createScoresButton(){
         SnakeButton scoresButton = new SnakeButton("Scores");
         addMenuButton(scoresButton);
+
+        scoresButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                createScoreSubScene();
+            }
+        });
     }
 
     private void createOptionsButton(){
         SnakeButton optionsButton = new SnakeButton("Options");
         addMenuButton(optionsButton);
+
+        optionsButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                createOptionSubScene();
+            }
+        });
+    }
+
+    private SnakeButton createBackButton(SnakeSubScene snakeSubScene){
+        SnakeButton backButton = new SnakeButton("Back");
+        backButton.setLayoutX(400);
+        backButton.setLayoutY(550);
+
+        backButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                snakeSubScene.moveSubScene();
+            }
+        });
+
+        return backButton;
     }
 
     private void createCreditsButton(){

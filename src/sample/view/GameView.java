@@ -19,10 +19,12 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import sample.model.SnakeSubScene;
 
 import java.security.Key;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class GameView {
 
@@ -37,7 +39,6 @@ public class GameView {
     private static final int colums = rows;
     private static final int backgroundSquareSize = widthGameScene / rows;
     private static final String[] foodsSnake = new String[]{"/sample/view/resources/apple.png", "/sample/view/resources/strawberry.png"};
-    private static final int movementSpeed=5;
 
     private static final int movementRight = 0;
     private static final int movementLeft = 1;
@@ -52,7 +53,10 @@ public class GameView {
     private int foodLocationY;
     private boolean gameOver;
     private int currentDirection;
+    private boolean gamePause;
     private int score = 0;
+    private Timeline timeline;
+    private SnakeSubScene menuPause;
 
     public static class Point{
         int x;
@@ -98,14 +102,12 @@ public class GameView {
                 }else if (code == KeyCode.S || code == KeyCode.DOWN) {
                     if (currentDirection != movementUp)
                         currentDirection = movementDown;
+                }else if (code == KeyCode.P){
+                    gamePause();
+                    createPauseMenu();
+                }else if (code == KeyCode.O){
+                    gameUnPause();
                 }
-            }
-        });
-
-        gameScene.setOnKeyReleased(new EventHandler<KeyEvent>() {
-            @Override
-            public void handle(KeyEvent keyEvent) {
-
             }
         });
     }
@@ -127,9 +129,15 @@ public class GameView {
         snakehead = snakeBody.get(0);
         generateFood();
 
-        Timeline timeline = new Timeline(new KeyFrame(Duration.millis(130), e->runGame(graphicsContext)));
+        timeline = new Timeline(new KeyFrame(Duration.millis(130), e->runGame(graphicsContext)));
         timeline.setCycleCount(Animation.INDEFINITE);
         timeline.play();
+    }
+
+    private void createPauseMenu(){
+        menuPause = new SnakeSubScene();
+        gameGroup.getChildren().add(menuPause);
+        menuPause.moveSubScene();
     }
 
     public void createNewGame(Stage menuStage){
@@ -140,9 +148,12 @@ public class GameView {
 
     private void runGame(GraphicsContext graphicsContext){
         if (gameOver){
-            graphicsContext.setFill(Color.RED);
-            graphicsContext.setFont(new Font("Serif", 70));
-            graphicsContext.fillText("You are dead", widthGameScene/5.5, heightGameScene/2);
+            //graphicsContext.setFill(Color.RED);
+            //graphicsContext.setFont(new Font("Serif", 70));
+            //graphicsContext.fillText("You are dead", widthGameScene/5.5, heightGameScene/2);
+            gameStage.close();
+            timeline.stop();
+            menuStage.show();
             return;
         }
         drawBackground(graphicsContext);
@@ -250,6 +261,16 @@ public class GameView {
     private void moveSnakeDown(){
         snakehead.y++;
     }
+
+    private void gamePause(){
+        timeline.pause();
+    }
+
+    private void gameUnPause(){
+        menuPause.moveSubScene();
+        timeline.play();
+    }
+
 
     public void gameOver(){
         if (snakehead.x < 0 || snakehead.y < 0 || snakehead.x < 0 || snakehead.x * backgroundSquareSize >= widthGameScene || snakehead.y * backgroundSquareSize >= heightGameScene){
